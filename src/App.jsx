@@ -1,6 +1,9 @@
 import './App.css';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { UserContext } from './Contexts';
+import UserInfoContainer from './components/UserInfoContainer';
+// import { useNavigate } from 'react-router-dom';
 
 function App() {
     const CLIENT_ID = "057aa5d2c1734e53be06bd6ee1d00643"
@@ -9,8 +12,9 @@ function App() {
     const RESPONSE_TYPE = "token"
 
     const [token, setToken] = useState("")
+    const [user, setUser] = useState({});
     const [searchKey, setSearchKey] = useState("")
-    const [artists, setArtists] = useState([])
+    // const [artists, setArtists] = useState([])
 
     // const getToken = () => {
     //     let urlParams = new URLSearchParams(window.location.hash.replace("#","?"));
@@ -32,7 +36,25 @@ function App() {
         }
 
         setToken(token)
+        const getUserImage = async () => {
+            let options = {
+                method: "GET",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            };
+            const response = await fetch('https://api.spotify.com/v1/me', options);
+            const data = await response.json();
+            // console.log("lo que devuelve el getUserImage = " + data);
+            console.log("tokjen = " + token);
+            setUser(data);
+            console.log(data);
+        };
 
+        if (token != "") {
+            // options.Authorization = `Bearer ${token}`;
+            getUserImage();
+        }
     }, [])
 
     const logout = () => {
@@ -40,51 +62,61 @@ function App() {
         window.localStorage.removeItem("token")
     }
 
-    const searchArtists = async (e) => {
-        e.preventDefault()
-        const {data} = await axios.get("https://api.spotify.com/v1/search", {
-            headers: {
-                Authorization: `Bearer ${token}`
-            },
-            params: {
-                q: searchKey,
-                type: "artist"
-            }
-        })
+    // const searchArtists = async (e) => {
+    //     e.preventDefault()
+    //     const {data} = await axios.get("https://api.spotify.com/v1/search", {
+    //         headers: {
+    //             Authorization: `Bearer ${token}`
+    //         },
+    //         params: {
+    //             q: searchKey,
+    //             type: "artist"
+    //         }
+    //     })
 
-        setArtists(data.artists.items)
-    }
+    //     setArtists(data.artists.items)
+    // }
 
-    const renderArtists = () => {
-        return artists.map(artist => (
-            <div key={artist.id}>
-                {artist.images.length ? <img width={"100%"} src={artist.images[0].url} alt=""/> : <div>No Image</div>}
-                {artist.name}
-            </div>
-        ))
-    }
+    // const renderArtists = () => {
+    //     return artists.map(artist => (
+    //         <div key={artist.id}>
+    //             {artist.images.length ? <img width={"100%"} src={artist.images[0].url} alt=""/> : <div>No Image</div>}
+    //             {artist.name}
+    //         </div>
+    //     ))
+    // }
 
     return (
         <div className="App">
-            <header className="App-header">
-                <h1>Spotify React</h1>
-                {!token ?
-                    <a href={`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`}>Login
-                        to Spotify</a>
-                    : <button onClick={logout}>Logout</button>}
+            {user.id != undefined && 
+                <UserContext.Provider value={user}>
+                    <header className="App-header">
+                        <h1 className='font-bold text-2xl bg-green-200 rounded-xl py-2 px-4'>Spotify React</h1>
+                        {!token ?
+                            <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={() => {
+                                window.location.href = (`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`)
+                            }}>Login
+                                to Spotify</button>
+                            : <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={logout}>Logout</button>}
 
-                {token ?
-                    <form onSubmit={searchArtists}>
-                        <input type="text" onChange={e => setSearchKey(e.target.value)}/>
-                        <button type={"submit"}>Search</button>
-                    </form>
+                        {token ?
+                            <div>
+                                {/* {user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
+                                <UserInfoContainer />
+                            </div>
+                            // <form onSubmit={searchArtists}>
+                            //     <input type="text" className='border-2 border-black' onChange={e => setSearchKey(e.target.value)}/>
+                            //     <button type={"submit"}>Search</button>
+                            // </form>
 
-                    : <h2>Please login</h2>
-                }
+                            : <h2>Please login</h2>
+                        }
 
-                {renderArtists()}
+                        {/* {renderArtists()} */}
 
-            </header>
+                    </header>
+                </UserContext.Provider>
+            }
         </div>
     );
 }
