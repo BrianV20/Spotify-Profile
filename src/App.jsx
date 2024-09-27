@@ -3,39 +3,30 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { UserContext } from './Contexts';
 import UserInfoContainer from './components/UserInfoContainer';
-// import { useNavigate } from 'react-router-dom';
+import Login from './components/Login';
 
 function App() {
-    const CLIENT_ID = "057aa5d2c1734e53be06bd6ee1d00643"
-    const REDIRECT_URI = "http://localhost:5173/"
-    const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize"
-    const RESPONSE_TYPE = "token"
+    // const CLIENT_ID = "057aa5d2c1734e53be06bd6ee1d00643";
+    // const REDIRECT_URI = "http://localhost:5173/";
+    // const AUTH_ENDPOINT = "https://accounts.spotify.com/authorize";
+    // const RESPONSE_TYPE = "token";
 
-    const [token, setToken] = useState("")
+    const [token, setToken] = useState("");
     const [user, setUser] = useState({});
-    const [searchKey, setSearchKey] = useState("")
-    // const [artists, setArtists] = useState([])
-
-    // const getToken = () => {
-    //     let urlParams = new URLSearchParams(window.location.hash.replace("#","?"));
-    //     let token = urlParams.get('access_token');
-    // }
+    // const [searchKey, setSearchKey] = useState("");
 
     useEffect(() => {
-        const hash = window.location.hash
-        let token = window.localStorage.getItem("token")
-
-        // getToken()
-
+        const hash = window.location.hash;
+        let token = window.localStorage.getItem("token");
 
         if (!token && hash) {
-            token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1]
+            token = hash.substring(1).split("&").find(elem => elem.startsWith("access_token")).split("=")[1];
 
-            window.location.hash = ""
-            window.localStorage.setItem("token", token)
+            window.location.hash = "";
+            window.localStorage.setItem("token", token);
         }
 
-        setToken(token)
+        setToken(token);
         const getUserImage = async () => {
             let options = {
                 method: "GET",
@@ -43,80 +34,48 @@ function App() {
                     Authorization: `Bearer ${token}`,
                 },
             };
-            const response = await fetch('https://api.spotify.com/v1/me', options);
-            const data = await response.json();
-            // console.log("lo que devuelve el getUserImage = " + data);
-            console.log("tokjen = " + token);
-            setUser(data);
-            console.log(data);
+            try {
+                const response = await fetch('https://api.spotify.com/v1/me', options);
+                const data = await response.json();
+                // console.log("User data fetched from Spotify:", data); // Debugging log
+                setUser(data);
+            } catch (error) {
+                console.error("Error fetching user data:", error); // Debugging log
+            }
         };
 
-        if (token != "") {
-            // options.Authorization = `Bearer ${token}`;
+        if (token) {
             getUserImage();
         }
-    }, [])
+    }, [token]); // Add token as a dependency to ensure the effect runs when token changes
 
     const logout = () => {
-        setToken("")
-        window.localStorage.removeItem("token")
-    }
+        setToken("");
+        window.localStorage.removeItem("token");
+    };
 
-    // const searchArtists = async (e) => {
-    //     e.preventDefault()
-    //     const {data} = await axios.get("https://api.spotify.com/v1/search", {
-    //         headers: {
-    //             Authorization: `Bearer ${token}`
-    //         },
-    //         params: {
-    //             q: searchKey,
-    //             type: "artist"
-    //         }
-    //     })
-
-    //     setArtists(data.artists.items)
-    // }
-
-    // const renderArtists = () => {
-    //     return artists.map(artist => (
-    //         <div key={artist.id}>
-    //             {artist.images.length ? <img width={"100%"} src={artist.images[0].url} alt=""/> : <div>No Image</div>}
-    //             {artist.name}
-    //         </div>
-    //     ))
-    // }
+    const updateUser = (userData) => {
+        setUser(userData);
+    };
 
     return (
         <div className="App">
-            {user.id != undefined && 
-                <UserContext.Provider value={user}>
-                    <header className="App-header">
-                        <h1 className='font-bold text-2xl bg-green-200 rounded-xl py-2 px-4'>Spotify React</h1>
-                        {!token ?
-                            <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={() => {
-                                window.location.href = (`${AUTH_ENDPOINT}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONSE_TYPE}`)
-                            }}>Login
-                                to Spotify</button>
-                            : <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={logout}>Logout</button>}
+            <UserContext.Provider value={user}>
+                <header className="App-header">
+                    <h1 className='font-bold text-2xl bg-green-200 rounded-xl py-2 px-4'>Spotify React</h1>
+                    {!token ?
+                        <Login updateUser={updateUser} />
+                        : <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={logout}>Logout</button>}
 
-                        {token ?
-                            <div>
-                                {/* {user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
-                                <UserInfoContainer />
-                            </div>
-                            // <form onSubmit={searchArtists}>
-                            //     <input type="text" className='border-2 border-black' onChange={e => setSearchKey(e.target.value)}/>
-                            //     <button type={"submit"}>Search</button>
-                            // </form>
-
-                            : <h2>Please login</h2>
-                        }
-
-                        {/* {renderArtists()} */}
-
-                    </header>
-                </UserContext.Provider>
-            }
+                    {token ?
+                        <div>
+                            {/* {user.images && user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
+                            <UserInfoContainer />
+                        </div>
+                        : <h2>Please login</h2>
+                    }
+                </header>
+            </UserContext.Provider>
         </div>
     );
 }
