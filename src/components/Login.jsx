@@ -33,7 +33,7 @@ function Login({ updateUser }) {
                 try {
                     const response = await fetch('https://api.spotify.com/v1/me', options);
                     const data = await response.json();
-                    console.log("User data fetched from Spotify:", data); // Debugging log
+                    // console.log("User data fetched from Spotify:", data); // Debugging log
                     updateUser(data);
                 } catch (error) {
                     console.error("Error fetching user data:", error); // Debugging log
