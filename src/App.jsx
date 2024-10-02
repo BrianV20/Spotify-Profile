@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { UserContext } from './Contexts';
 import UserInfoContainer from './components/UserInfoContainer';
+import MostListenedEntity from './components/MostListenedEntity';
 import Login from './components/Login';
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
                         <div>
                             {/* {user.images && user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
                             <UserInfoContainer />
+                            <MostListenedEntity />
                         </div>
                         : <h2>Please login</h2>
                     }
