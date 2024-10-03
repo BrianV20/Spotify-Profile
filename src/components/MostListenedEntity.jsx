@@ -5,6 +5,7 @@ import EntitySlide from "./EntitySlide";
 export default function MostListenedEntity() {
     const [topArtists, setTopArtists] = useState([]);
     const [topSongs, setTopSongs] = useState([]);
+    const [topAlbums, setTopAlbums] = useState([]);
 
     useEffect(() => {
         const token = window.localStorage.getItem("token");
@@ -32,9 +33,9 @@ export default function MostListenedEntity() {
             let timeRange = 'short_term';
             let isNextNull = false;
             // let contador = 0;
-            const getTopAlbums = async () => {
+            const getTopSongs = async () => {
                 let accumulatedSongs = [];
-                while(!isNextNull) {
+                while (!isNextNull) {
                     try {
                         const response = await fetch(`${fetchTopSongsEndpoint}&${timeRange}`, options);
                         const data = await response.json();
@@ -68,34 +69,86 @@ export default function MostListenedEntity() {
                         // console.log("TOP SONGS LENGTH: ", topSongs.length);
                         // console.log("VUELTA ", contador, ". NEXT: ", data.next);
 
-                        console.log(topSongs.length);
-                        if(topSongs.length >= 100) {
+                        // console.log(topSongs.length);
+                        if (topSongs.length >= 100) {
                             isNextNull = true;
                         }
-                        else{
-                            if(data.next != null) {
+                        else {
+                            if (data.next != null) {
                                 fetchTopSongsEndpoint = data.next;
                             } else {
                                 isNextNull = true;
                             }
                         }
                         // contador ++;
-                    } catch(error) {
+                    } catch (error) {
                         console.error("ERROR: ", error);
                     }
                 }
                 setTopSongs(accumulatedSongs);
+                return accumulatedSongs;
             };
 
-            getTopArtists();
-            getTopAlbums();
+            const getTopAlbumsBasedOnTopSongs = async (songs) => {
+                let actualSongs = await songs;
+                // console.log("Top songs: ");
+                // console.log(actualSongs);
+                let albumsTitles = actualSongs.map(song => {
+                    return song.album;
+                });
+
+                const uniqueAlbums = albumsTitles.reduce((acc, album) => {
+                    if (!acc.some(item => item.id === album.id)) {
+                        Object.defineProperty(album, 'amountOfSongs', { value: 0, writable: true });
+                        acc.push(album);
+                    }
+                    return acc;
+                }, []);
+                // console.log(albumsTitles);
+                // console.log(uniqueAlbums);
+
+                // actualSongs.map(song => {
+                //     for(let i = 0; i <= actualSongs.length; i++){
+
+                //     }
+                // });
+                for(let i = 0; i < uniqueAlbums.length; i++){
+                    for(let c = 0; c < actualSongs.length; c++){
+                        if(actualSongs[c].album.id == uniqueAlbums[i].id){
+                            uniqueAlbums[i].amountOfSongs += 1;
+                        };
+                    };
+                };
+
+                // console.log(uniqueAlbums);
+
+                let orderedAlbums = uniqueAlbums.sort((a, b) => b.amountOfSongs - a.amountOfSongs);
+                // console.log(orderedAlbums);
+                //ya tengo los discos unicos y tengo las top 100 canciones, necesito ordenar los discos en base a la cantidad de canciones que pertenezcan a los discos.
+                // metodo 1) Le agrego un metodo a cada uniqueAlbum que sea amountOfSongs que lo voy a modificar con un foreach o map sobre actual songs. Una vez lo tenga voy a ordenar el array uniqueAlbums en base a la cantidad de esa propiedad, amountOfSongs.
+                return orderedAlbums;
+            };
+
+            const fetchAndProcessData = async () => {
+                getTopArtists();
+                let songsToGetTheTopAlbums = await getTopSongs();
+                console.log(songsToGetTheTopAlbums);
+                setTopAlbums(await getTopAlbumsBasedOnTopSongs(songsToGetTheTopAlbums));
+            };
+
+            fetchAndProcessData();
         }
     }, []);
 
+    // useEffect(() => {
+    //     console.log("El valor actual de top songs: ");
+    //     console.log(topSongs);
+    // }, [topSongs]);
+
     useEffect(() => {
-        console.log("El valor actual de top songs: ");
-        console.log(topSongs);
-    }, [topSongs]);
+        console.log('El valor actual de top albums: ');
+        console.log(topAlbums);
+    }, [topAlbums])
 
     return (
         <div className="border-2 border-black bg-violet-300 py-2 px-1">
@@ -121,7 +174,27 @@ export default function MostListenedEntity() {
                                 }
                             })}
                         </div>
-                    </div>}
+                    </div>
+                }
+                {topAlbums.length > 0 && 
+                    <div className="flex min-h-[16rem] mt-5 bg-pink-300">
+                        <div className="w-[50%] min-h-full">
+                            {console.log(topAlbums[0])}
+                            <EntitySlide albumName={topAlbums[0].name} albumImg={topAlbums[0].images[1].url}/>
+                        </div>
+                        <div className="w-[50%] flex flex-wrap border-2 border-gray-500">
+                            {topAlbums.map((album, i) => {
+                                if(i > 0){
+                                    if(i < 5){
+                                        return <div className="w-[50%] h-[50%]" key={i}>
+                                            <EntitySlide albumName={album.name} albumImg={album.images[1].url} />
+                                        </div>
+                                    }
+                                }
+                            })}
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     )
