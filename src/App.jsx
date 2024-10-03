@@ -5,6 +5,7 @@ import { UserContext } from './Contexts';
 import UserInfoContainer from './components/UserInfoContainer';
 import MostListenedEntity from './components/MostListenedEntity';
 import Login from './components/Login';
+import Library from './components/Library';
 
 function App() {
     // const CLIENT_ID = "057aa5d2c1734e53be06bd6ee1d00643";
@@ -73,6 +74,7 @@ function App() {
                             {/* {user.images && user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
                             <UserInfoContainer />
                             <MostListenedEntity />
+                            <Library />
                         </div>
                         : <h2>Please login</h2>
                     }
