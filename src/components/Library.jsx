@@ -36,7 +36,7 @@ export default function Library() {
             const getUserSavedSongs = async () => {
                 const response = await fetch('https://api.spotify.com/v1/me/tracks', options);
                 const data = await response.json();
-                console.log(data);
+                // console.log(data);
                 setUserSavedSongs(data);
             };
 

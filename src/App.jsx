@@ -6,6 +6,7 @@ import UserInfoContainer from './components/UserInfoContainer';
 import MostListenedEntity from './components/MostListenedEntity';
 import Login from './components/Login';
 import Library from './components/Library';
+import FollowedArtists from './components/FollowedArtists';
 
 function App() {
     // const CLIENT_ID = "057aa5d2c1734e53be06bd6ee1d00643";
@@ -75,6 +76,7 @@ function App() {
                             <UserInfoContainer />
                             <MostListenedEntity />
                             <Library />
+                            <FollowedArtists />
                         </div>
                         : <h2>Please login</h2>
                     }
