@@ -50,8 +50,11 @@ export default function Library() {
         <div className="bg-red-300 mt-6">
             <p className="mx-auto text-xl">Library</p>
             <LibraryEntityCollection entityType={'Playlists'} entities={userPlaylists} />
+            {/* <button className="border-2 border-red-700 text-lg my-4">More playlists... <i className="fa-solid fa-arrow-right"></i></button> */}
             <LibraryEntityCollection entityType={'Albums'} entities={userSavedAlbums} />
+            {/* <button className="border-2 border-red-700 text-lg my-4">More albums... <i className="fa-solid fa-arrow-right"></i></button> */}
             <LibraryEntityCollection entityType={'Songs'} entities={userSavedSongs} />
+            {/* <button className="border-2 border-red-700 text-lg my-4">More songs... <i className="fa-solid fa-arrow-right"></i></button> */}
         </div>
     )
 };

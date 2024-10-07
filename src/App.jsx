@@ -62,15 +62,14 @@ function App() {
     };
 
     return (
-        <div className="App">
+        <div className='bg-[#242424]'>
             <UserContext.Provider value={user}>
-                <header className="App-header">
-                    <h1 className='font-bold text-2xl bg-green-200 rounded-xl py-2 px-4'>Spotify React</h1>
+                <div>
                     {!token ?
                         <Login updateUser={updateUser} />
-                        : <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={logout}>Logout</button>}
+                        : <button className='p-2 mb-2 border-2 border-black text-xl mt-3 rounded-lg bg-[#27c561] font-inter' onClick={logout}>Logout</button>}
 
-                    {token ?
+                    {token &&
                         <div>
                             {/* {user.images && user.images.length > 0 && <img src={user.images[0].url} alt="user profile pic" />} */}
                             <UserInfoContainer />
@@ -78,9 +77,9 @@ function App() {
                             <Library />
                             <FollowedArtists />
                         </div>
-                        : <h2>Please login</h2>
+                        // : <h2>Please login</h2>
                     }
-                </header>
+                </div>
             </UserContext.Provider>
         </div>
     );

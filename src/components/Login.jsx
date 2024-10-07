@@ -45,9 +45,12 @@ function Login({ updateUser }) {
     }, [updateUser]);
 
     return (
-        <button className='p-2 border-2 border-black rounded-lg bg-blue-300' onClick={handleLogin}>
-            Login to Spotify
-        </button>
+        <div className='bg-[#121212] py-6 clear-start rounded-xl text-center'>
+            <p className='font-bold text-white font-gothic text-3xl'>Welcome! You need to login to Spotify to see your profile</p>
+            <button className='p-2 border-2 border-black text-xl mt-5 rounded-lg bg-[#27c561] font-inter' onClick={handleLogin}>
+                Login to <p className='text-white inline-block font-semibold'>Spotify <i className='fa-brands fa-spotify'></i></p>
+            </button>
+        </div>
     );
 }
 

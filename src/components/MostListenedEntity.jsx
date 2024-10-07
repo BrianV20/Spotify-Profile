@@ -12,7 +12,7 @@ export default function MostListenedEntity() {
     const [isFetching, setIsFetching] = useState(false);
     const [loadingArtists, setLoadingArtists] = useState(false);
 
-    const handleOptionChangeAlbums = useCallback((event) => {
+    const handleOptionChangeAlbums = (event) => {
         setSelectedOptionAlbums(event.target.value);
         let timeRange = 'short_term';
         if (event.target.value === "Last 6 months") {
@@ -22,9 +22,9 @@ export default function MostListenedEntity() {
         }
         setFetchTopSongsEndpoint(`https://api.spotify.com/v1/me/top/tracks?limit=10&time_range=${timeRange}`);
         setTopSongs([]); // Reset topSongs when the endpoint changes
-    }, []);
+    };
 
-    const handleOptionChangeArtists = useCallback((event) => {
+    const handleOptionChangeArtists = (event) => {
         setSelectedOptionArtists(event.target.value);
         let timeRange = 'short_term';
         if (event.target.value === "Last 6 months") {
@@ -34,7 +34,7 @@ export default function MostListenedEntity() {
         }
         setFetchTopArtistsEndpoint(`https://api.spotify.com/v1/me/top/artists?limit=10&time_range=${timeRange}`);
         setLoadingArtists(true); // Set loading state for artists
-    }, []);
+    };
 
     useEffect(() => {
         const token = window.localStorage.getItem("token");
@@ -48,9 +48,18 @@ export default function MostListenedEntity() {
                 },
             };
 
+            const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
             const getTopArtists = async () => {
                 try {
                     const response = await fetch(fetchTopArtistsEndpoint, options);
+                    if (response.status === 429) {
+                        const retryAfter = response.headers.get('Retry-After');
+                        const delayTime = retryAfter ? parseInt(retryAfter) * 1000 : 1000;
+                        console.warn(`Rate limited. Retrying after ${delayTime} ms`);
+                        await delay(delayTime);
+                        return getTopArtists();
+                    }
                     const data = await response.json();
                     setTopArtists(data.items);
                     setLoadingArtists(false); // Reset loading state for artists
@@ -67,14 +76,27 @@ export default function MostListenedEntity() {
                 while (!isNextNull) {
                     try {
                         const response = await fetch(nextEndpoint, options);
+                        if (response.status === 429) {
+                            const retryAfter = response.headers.get('Retry-After');
+                            const delayTime = retryAfter ? parseInt(retryAfter) * 1000 : 1000;
+                            console.warn(`Rate limited. Retrying after ${delayTime} ms`);
+                            await delay(delayTime);
+                            continue;
+                        }
                         const data = await response.json();
 
-                        accumulatedSongs = [...accumulatedSongs, ...data.items];
-                        if (accumulatedSongs.length >= 100 || !data.next) {
+                        if(data.items){
+                            accumulatedSongs = [...accumulatedSongs, ...data.items];
+                            if (accumulatedSongs.length >= 100 || !data.next) {
+                                isNextNull = true;
+                                accumulatedSongs = accumulatedSongs.slice(0, 100); // Ensure only 100 songs are kept
+                            } else {
+                                nextEndpoint = data.next;
+                            }
+                        }
+                        else {
+                            console.error("unexpected response format: ", data);
                             isNextNull = true;
-                            accumulatedSongs = accumulatedSongs.slice(0, 100); // Ensure only 100 songs are kept
-                        } else {
-                            nextEndpoint = data.next;
                         }
                     } catch (error) {
                         console.error("ERROR: ", error);

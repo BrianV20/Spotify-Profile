@@ -13,8 +13,8 @@ export default function LibraryEntityCollection({ entityType, entities }) {
                         {entityType === 'Albums' && <LibraryEntity entityName={ent.album.name} entityImg={ent.album.images[1].url} />}
                         {entityType === 'Songs' && <LibraryEntity entityName={ent.track.name} entityImg={ent.track.album.images[1].url} />}
                     </div>
-                    
                 })}
+                <button className="border-2 border-red-700 text-lg my-4 text-white">More {entityType}... <i className="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
     )

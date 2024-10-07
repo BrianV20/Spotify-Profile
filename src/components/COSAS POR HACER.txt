@@ -1,7 +1,12 @@
-MostListenedEntity: Agregar para que en Artistas principales te aparezcan los minutos repodrucidos de cada artista (ya que no tengo manera de ver los scrobbles de cada canción como en last.fm) y en Albumes principales los minutos reproducidos de cada disco. Agregar la opción para que se puedan ver las entidades de a 5 (tipo el predeterminado de last.fm) o de a 8 como en last.fm.
+MostListenedEntity: Agregar para que en Artistas principales te aparezcan los minutos repodrucidos de cada artista (ya que no tengo manera de ver los scrobbles de cada canción como en last.fm) y en Albumes principales los minutos reproducidos de cada disco. Agregar la opción para que se puedan ver las entidades de a 5 (tipo el predeterminado de last.fm) o de a 8 como en last.fm. NI GANAS.
 
-App: Arreglar ese problema que hace que al entrar en la página de nuevo ya teniendo la sesión iniciada previamente te tira un error porque la página no reconoce que está la sesión iniciada con Spotify.
+App: Arreglar ese problema que hace que al entrar en la página de nuevo ya teniendo la sesión iniciada previamente te tira un error porque la página no reconoce que está la sesión iniciada con Spotify. HACER
 
-Login: Arreglar estilo
+Login: Arreglar estilo. HACER
 
-LibraryEntityCollection: Agregar la función para que la colección tenga un offset (asi no muestra todo de una en la pantalla) y haya un botón para poder ver las demás entidades. El botón no redirigirá a otra ventana como Spotify, sino que simplemente mostrará las entidades faltantes debajo.
+LibraryEntityCollection: Agregar la función para que la colección tenga un offset (asi no muestra todo de una en la pantalla) y haya un botón para poder ver las demás entidades. El botón no redirigirá a otra ventana como Spotify, sino que simplemente mostrará las entidades faltantes debajo. HACER
+
+HACER LOS ESTILOS Y RESPONSIVE.
+
+COLORES: fondo oscuro de spotify: #121212. Gris: #5b5a5b. Verde: #1dd760.
+FUENTES: logo y titulos: gothic. texto común: inter

@@ -105,7 +105,7 @@ export default function UserInfoContainer() {
     // }, [followingPlaylists]);
 
     return (
-        <div className="bg-red-200 border-2 border-black flex">
+        <div className="border-2 border-red-500 flex text-white">
             <div className="border-2 border-blue-400 p-2">
                 {user.images != undefined && <img src={user.images[0].url} alt="user profile pic" />}
             </div>
